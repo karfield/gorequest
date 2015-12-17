@@ -605,8 +605,7 @@ func (s *SuperAgent) End(callback ...func(response Response, body string, errs [
 	return resp, bodyString, errs
 }
 
-// EndBytes should be used when you want the body as bytes. The callbacks work the same way as with `End`, except that a byte array is used instead of a string.
-func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, errs []error)) (Response, []byte, []error) {
+func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 	var (
 		req  *http.Request
 		err  error
@@ -756,6 +755,17 @@ func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, e
 		} else {
 			s.logger.Printf("HTTP Response: %s", string(dump))
 		}
+	}
+
+	return resp, nil
+}
+
+// EndBytes should be used when you want the body as bytes. The callbacks work the same way as with `End`, except that a byte array is used instead of a string.
+func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, errs []error)) (Response, []byte, []error) {
+
+	resp, errors := EndBytesNoBody()
+	if errors != nil {
+		return nil, nil, errors
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
