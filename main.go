@@ -762,8 +762,7 @@ func (s *SuperAgent) EndBytes2() (Response, []error) {
 
 // EndBytes should be used when you want the body as bytes. The callbacks work the same way as with `End`, except that a byte array is used instead of a string.
 func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, errs []error)) (Response, []byte, []error) {
-
-	resp, errors := EndBytes2()
+	resp, errors := s.EndBytes2()
 	if errors != nil {
 		return nil, nil, errors
 	}
