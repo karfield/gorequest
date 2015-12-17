@@ -605,7 +605,7 @@ func (s *SuperAgent) End(callback ...func(response Response, body string, errs [
 	return resp, bodyString, errs
 }
 
-func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
+func (s *SuperAgent) EndBytes2() (Response, []error) {
 	var (
 		req  *http.Request
 		err  error
@@ -613,7 +613,7 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 	)
 	// check whether there is an error. if yes, return all errors
 	if len(s.Errors) != 0 {
-		return nil, nil, s.Errors
+		return nil, s.Errors
 	}
 	// check if there is forced type
 	switch s.ForceType {
@@ -652,7 +652,7 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 			req, err = http.NewRequest(s.Method, s.Url, contentReader)
 			if err != nil {
 				s.Errors = append(s.Errors, err)
-				return nil, nil, s.Errors
+				return nil, s.Errors
 			}
 			req.Header.Set("Content-Type", "application/json")
 		} else if s.TargetType == "form" {
@@ -667,7 +667,7 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 			req, err = http.NewRequest(s.Method, s.Url, contentReader)
 			if err != nil {
 				s.Errors = append(s.Errors, err)
-				return nil, nil, s.Errors
+				return nil, s.Errors
 			}
 			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		} else if s.TargetType == "text" {
@@ -683,11 +683,11 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 		req, err = http.NewRequest(s.Method, s.Url, nil)
 		if err != nil {
 			s.Errors = append(s.Errors, err)
-			return nil, nil, s.Errors
+			return nil, s.Errors
 		}
 	default:
 		s.Errors = append(s.Errors, errors.New("No method specified"))
-		return nil, nil, s.Errors
+		return nil, s.Errors
 	}
 
 	for k, v := range s.Header {
@@ -743,7 +743,7 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 	resp, err = s.Client.Do(req)
 	if err != nil {
 		s.Errors = append(s.Errors, err)
-		return nil, nil, s.Errors
+		return nil, s.Errors
 	}
 	defer resp.Body.Close()
 
@@ -763,7 +763,7 @@ func (s *SuperAgent) EndBytesNoBody() (Response, []error) {
 // EndBytes should be used when you want the body as bytes. The callbacks work the same way as with `End`, except that a byte array is used instead of a string.
 func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, errs []error)) (Response, []byte, []error) {
 
-	resp, errors := EndBytesNoBody()
+	resp, errors := EndBytes2()
 	if errors != nil {
 		return nil, nil, errors
 	}
